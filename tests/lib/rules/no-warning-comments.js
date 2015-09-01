@@ -35,7 +35,8 @@ ruleTester.run("no-warning-comments", rule, {
         { code: "/* any block comment with TODO, FIXME or XXX */", args: 1 },
         { code: "/* any block comment with (TODO, FIXME's or XXX!) */", args: 1 },
         { code: "// comments containing terms as substrings like TodoMVC", options: [{ "terms": ["todo"], "location": "anywhere" } ] },
-        { code: "// special regex characters don't cause problems", options: [{ "terms": ["[aeiou]"], "location": "anywhere" } ] }
+        { code: "// special regex characters don't cause problems", options: [{ "terms": ["[aeiou]"], "location": "anywhere" } ] },
+        { code: "/*eslint no-warning-comments: [2, { \"terms\": [\"todo\", \"fixme\", \"any other term\"], \"location\": \"anywhere\" }]*/\n\nvar x = 10;\n" }
     ],
     invalid: [
         { code: "// fixme", args: [1], errors: [ { message: "Unexpected fixme comment." } ] },
