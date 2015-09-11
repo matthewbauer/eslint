@@ -297,7 +297,19 @@ var isIgnored = cli.isPathIgnored("foo/bar.js");
 
 ### getFormatter()
 
-Retrieves a formatter, which you can then use to format a report object. The argument is either the name of a built-in formatter ("stylish" (the default), "checkstyle", "compact", "html", "jslint-xml", "junit", "json", "tap", and "unix") or the full path to a JavaScript file containing a custom formatter. You can also omit the argument to retrieve the default formatter.
+Retrieves a formatter, which you can then use to format a report object. The argument is either the name of a built-in formatter:
+
+* "[stylish](./user-guide/formatter-examples#stylish)" (the default)
+* "[checkstyle](./user-guide/formatter-examples#checkstyle)"
+* "[compact](./user-guide/formatter-examples#compact)"
+* "[html](./user-guide/formatter-examples#html)"
+* "[jslint-xml](./user-guide/formatter-examples#jslint-xml)"
+* "[json](./user-guide/formatter-examples#json)"
+* "[junit](./user-guide/formatter-examples#junit)"
+* "[tap](./user-guide/formatter-examples#tap)"
+* "[unix](./user-guide/formatter-examples#unix)"
+
+or the full path to a JavaScript file containing a custom formatter. You can also omit the argument to retrieve the default formatter.
 
 ```js
 var CLIEngine = require("eslint").CLIEngine;

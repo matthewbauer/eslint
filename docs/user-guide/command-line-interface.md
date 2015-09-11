@@ -248,7 +248,17 @@ When specified, the given format is output into the provided file name.
 
 #### `-f`, `--format`
 
-This option specifies the output format for the console. Possible formats are "stylish" (the default), "checkstyle", "compact", "html", "jslint-xml", "junit", "json", "tap" and "unix".
+This option specifies the output format for the console. Possible formats are:
+
+* [stylish](formatter-examples#stylish) (the default)
+* [checkstyle](formatter-examples#checkstyle)
+* [compact](formatter-examples#compact)
+* [html](formatter-examples#html)
+* [jslint-xml](formatter-examples#jslint-xml)
+* [json](formatter-examples#json)
+* [junit](formatter-examples#junit)
+* [tap](formatter-examples#tap)
+* [unix](formatter-examples#unix)
 
 Example:
 
