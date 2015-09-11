@@ -19,6 +19,7 @@ var path = require("path");
 // Tests
 //------------------------------------------------------------------------------
 var fixture = fs.readFileSync(path.join(__dirname, "../../fixtures/rules/indent/indent-invalid-fixture-1.js"), "utf8");
+var fixedFixture = fs.readFileSync(path.join(__dirname, "../../fixtures/rules/indent/indent-valid-fixture-1.js"), "utf8");
 
 /**
  * Create error message object for failure cases
@@ -838,7 +839,12 @@ ruleTester.run("indent", rule, {
                 "b();\n" +
                 "}\n",
             options: [2],
-            errors: expectedErrors([[3, 2, 0, "ExpressionStatement"]])
+            errors: expectedErrors([[3, 2, 0, "ExpressionStatement"]]),
+            output:
+                "var a = b;\n" +
+                "if (a) {\n" +
+                "  b();\n" +
+                "}\n"
         },
         {
             code:
@@ -850,17 +856,27 @@ ruleTester.run("indent", rule, {
                 "    c++; // <-\n" +
                 "}\n",
             options: [2],
-            errors: expectedErrors([[4, 2, 0, "ExpressionStatement"], [6, 2, 4, "ExpressionStatement"]])
+            errors: expectedErrors([[4, 2, 0, "ExpressionStatement"], [6, 2, 4, "ExpressionStatement"]]),
+            output:
+                "if (array.some(function(){\n" +
+                "  return true;\n" +
+                "})) {\n" +
+                "  a++; // ->\n" +
+                "  b++;\n" +
+                "  c++; // <-\n" +
+                "}\n"
         },
         {
             code: "if (a){\n\tb=c;\n\t\tc=d;\ne=f;\n}",
             options: ["tab"],
-            errors: expectedErrors("tab", [[3, 1, 2, "ExpressionStatement"], [4, 1, 0, "ExpressionStatement"]])
+            errors: expectedErrors("tab", [[3, 1, 2, "ExpressionStatement"], [4, 1, 0, "ExpressionStatement"]]),
+            output: "if (a){\n\tb=c;\n\tc=d;\n\te=f;\n}"
         },
         {
             code: "if (a){\n    b=c;\n      c=d;\n e=f;\n}",
             options: [4],
-            errors: expectedErrors([[3, 4, 6, "ExpressionStatement"], [4, 4, 1, "ExpressionStatement"]])
+            errors: expectedErrors([[3, 4, 6, "ExpressionStatement"], [4, 4, 1, "ExpressionStatement"]]),
+            output: "if (a){\n    b=c;\n    c=d;\n    e=f;\n}"
         },
         {
             code: fixture,
@@ -950,7 +966,8 @@ ruleTester.run("indent", rule, {
                 [500, 10, 8, "ExpressionStatement"],
                 [501, 8, 6, "BlockStatement"],
                 [506, 6, 8, "BlockStatement"]
-            ])
+            ]),
+            output: fixedFixture
         },
         {
             code:
@@ -966,7 +983,19 @@ ruleTester.run("indent", rule, {
                 "        break;\n" +
                 "}",
             options: [4, {SwitchCase: 1}],
-            errors: expectedErrors([[4, 8, 4, "BreakStatement"], [7, 8, 4, "BreakStatement"]])
+            errors: expectedErrors([[4, 8, 4, "BreakStatement"], [7, 8, 4, "BreakStatement"]]),
+            output:
+                "switch(value){\n" +
+                "    case \"1\":\n" +
+                "        a();\n" +
+                "        break;\n" +
+                "    case \"2\":\n" +
+                "        a();\n" +
+                "        break;\n" +
+                "    default:\n" +
+                "        a();\n" +
+                "        break;\n" +
+                "}"
         },
         {
             code:
@@ -1004,7 +1033,26 @@ ruleTester.run("indent", rule, {
                 "    break;\n" +
                 "}",
             options: [4, {SwitchCase: 1}],
-            errors: expectedErrors([[11, 8, 4, "BreakStatement"], [14, 8, 4, "BreakStatement"], [17, 8, 4, "BreakStatement"]])
+            errors: expectedErrors([[11, 8, 4, "BreakStatement"], [14, 8, 4, "BreakStatement"], [17, 8, 4, "BreakStatement"]]),
+            output:
+                "switch(value){\n" +
+                "    case \"1\":\n" +
+                "    case \"2\":\n" +
+                "        a();\n" +
+                "        break;\n" +
+                "    default:\n" +
+                "        break;\n" +
+                "}\n" +
+                "switch(value){\n" +
+                "    case \"1\":\n" +
+                "        break;\n" +
+                "    case \"2\":\n" +
+                "        a();\n" +
+                "        break;\n" +
+                "    default:\n" +
+                "        a();\n" +
+                "        break;\n" +
+                "}"
         },
         {
             code:
@@ -1025,7 +1073,17 @@ ruleTester.run("indent", rule, {
                 [6, 4, 8, "BreakStatement"],
                 [7, 0, 4, "SwitchCase"],
                 [8, 4, 8, "BreakStatement"]
-            ])
+            ]),
+            output:
+                "switch(value){\n" +
+                "case \"1\":\n" +
+                "    a();\n" +
+                "    break;\n" +
+                "case \"2\":\n" +
+                "    break;\n" +
+                "default:\n" +
+                "    break;\n" +
+                "}"
         },
         {
             code:
@@ -1033,7 +1091,12 @@ ruleTester.run("indent", rule, {
                 "with (obj) {\n" +
                 "console.log(foo + bar);\n" +
                 "}\n",
-            errors: expectedErrors([3, 4, 0, "ExpressionStatement"])
+            errors: expectedErrors([3, 4, 0, "ExpressionStatement"]),
+            output:
+                "var obj = {foo: 1, bar: 2};\n" +
+                "with (obj) {\n" +
+                "    console.log(foo + bar);\n" +
+                "}\n"
         },
         {
             code:
@@ -1053,7 +1116,16 @@ ruleTester.run("indent", rule, {
                 [5, 4, 0, "SwitchCase"],
                 [6, 8, 0, "ExpressionStatement"],
                 [7, 8, 0, "BreakStatement"]
-            ])
+            ]),
+            output:
+                "switch (a) {\n" +
+                "    case '1':\n" +
+                "        b();\n" +
+                "        break;\n" +
+                "    default:\n" +
+                "        c();\n" +
+                "        break;\n" +
+                "}\n"
         },
         {
             code:
@@ -1062,7 +1134,10 @@ ruleTester.run("indent", rule, {
             options: [4],
             errors: expectedErrors([
                 [2, 4, 0, "ExpressionStatement"]
-            ])
+            ]),
+            output:
+                "while (a) \n" +
+                "    b();"
         },
         {
             code:
@@ -1071,7 +1146,10 @@ ruleTester.run("indent", rule, {
             options: [4],
             errors: expectedErrors([
                 [2, 4, 0, "ExpressionStatement"]
-            ])
+            ]),
+            output:
+            "for (;;) \n" +
+            "    b();"
         },
         {
             code:
@@ -1080,7 +1158,10 @@ ruleTester.run("indent", rule, {
             options: [4],
             errors: expectedErrors([
                 [2, 4, 0, "ExpressionStatement"]
-            ])
+            ]),
+            output:
+            "for (a in x) \n" +
+            "    b();"
         },
         {
             code:
@@ -1090,7 +1171,11 @@ ruleTester.run("indent", rule, {
             options: [4],
             errors: expectedErrors([
                 [2, 4, 0, "ExpressionStatement"]
-            ])
+            ]),
+            output:
+            "do \n" +
+            "    b();\n" +
+            "while(true)"
         },
         {
             code:
@@ -1099,7 +1184,10 @@ ruleTester.run("indent", rule, {
             options: [4],
             errors: expectedErrors([
                 [2, 4, 0, "ExpressionStatement"]
-            ])
+            ]),
+            output:
+            "if(true) \n" +
+            "    b();"
         },
         {
             code:
@@ -1112,7 +1200,12 @@ ruleTester.run("indent", rule, {
                 [2, 2, 6, "Property"],
                 [3, 2, 4, "Property"],
                 [4, 0, 4, "ObjectExpression"]
-            ])
+            ]),
+            output:
+            "var test = {\n" +
+            "  a: 1,\n" +
+            "  b: 2\n" +
+            "};\n"
         },
         {
             code:
@@ -1127,7 +1220,14 @@ ruleTester.run("indent", rule, {
                 [2, 8, 6, "ExpressionStatement"],
                 [3, 8, 4, "ExpressionStatement"],
                 [4, 8, 10, "ExpressionStatement"]
-            ])
+            ]),
+            output:
+                "var a = function() {\n" +
+                "        a++;\n" +
+                "        b++;\n" +
+                "        c++;\n" +
+                "    },\n" +
+                "    b;\n"
         },
         {
             code:
@@ -1138,7 +1238,11 @@ ruleTester.run("indent", rule, {
             errors: expectedErrors([
                 [2, 4, 0, "VariableDeclarator"],
                 [3, 4, 0, "VariableDeclarator"]
-            ])
+            ]),
+            output:
+            "var a = 1,\n" +
+            "    b = 2,\n" +
+            "    c = 3;\n"
         },
         {
             code:
@@ -1149,7 +1253,11 @@ ruleTester.run("indent", rule, {
             ecmaFeatures: { arrowFunctions: true },
             errors: expectedErrors([
                 [3, 4, 2, "ExpressionStatement"]
-            ])
+            ]),
+            output:
+            "[a, b, \nc].forEach((index) => {\n" +
+            "    index;\n" +
+            "});\n"
         },
         {
             code:
@@ -1160,7 +1268,11 @@ ruleTester.run("indent", rule, {
             ecmaFeatures: { arrowFunctions: true },
             errors: expectedErrors([
                 [3, 4, 2, "ReturnStatement"]
-            ])
+            ]),
+            output:
+            "[a, b, \nc].forEach(function(index){\n" +
+            "    return index;\n" +
+            "});\n"
         },
         {
             code:
@@ -1171,7 +1283,11 @@ ruleTester.run("indent", rule, {
             ecmaFeatures: { arrowFunctions: true },
             errors: expectedErrors([
                 [2, 4, 2, "ExpressionStatement"]
-            ])
+            ]),
+            output:
+            "[a, b, c].forEach((index) => {\n" +
+            "    index;\n" +
+            "});\n"
         },
         {
             code:
@@ -1182,7 +1298,11 @@ ruleTester.run("indent", rule, {
             ecmaFeatures: { arrowFunctions: true },
             errors: expectedErrors([
                 [2, 4, 2, "ReturnStatement"]
-            ])
+            ]),
+            output:
+            "[a, b, c].forEach(function(index){\n" +
+            "    return index;\n" +
+            "});\n"
         },
         {
             code: "while (1 < 2)\nconsole.log('foo')\n  console.log('bar')",
@@ -1190,7 +1310,8 @@ ruleTester.run("indent", rule, {
             errors: expectedErrors([
                 [2, 2, 0, "ExpressionStatement"],
                 [3, 0, 2, "ExpressionStatement"]
-            ])
+            ]),
+            output: "while (1 < 2)\n  console.log('foo')\nconsole.log('bar')"
         },
         {
             code:
@@ -1203,7 +1324,14 @@ ruleTester.run("indent", rule, {
             options: [2, { SwitchCase: 1 }],
             errors: expectedErrors([
                 [3, 4, 2, "SwitchCase"]
-            ])
+            ]),
+            output:
+            "function salutation () {\n" +
+            "  switch (1) {\n" +
+            "    case 0: return console.log('hi')\n" +
+            "    case 1: return console.log('hey')\n" +
+            "  }\n" +
+            "}\n"
         },
         {
             code:
@@ -1212,7 +1340,10 @@ ruleTester.run("indent", rule, {
             options: [2, {SwitchCase: 1}],
             errors: expectedErrors([
                 [2, 2, 0, "VariableDeclarator"]
-            ])
+            ]),
+            output:
+            "var geometry, box, face1, face2, colorT, colorB, sprite, padding, maxWidth,\n" +
+            "  height, rotate;"
         },
         {
             code:
@@ -1232,7 +1363,16 @@ ruleTester.run("indent", rule, {
                 [5, 8, 0, "SwitchCase"],
                 [6, 12, 0, "ExpressionStatement"],
                 [7, 12, 0, "BreakStatement"]
-            ])
+            ]),
+            output:
+            "switch (a) {\n" +
+            "        case '1':\n" +
+            "            b();\n" +
+            "            break;\n" +
+            "        default:\n" +
+            "            c();\n" +
+            "            break;\n" +
+            "}\n"
         },
         {
             code:
@@ -1241,7 +1381,10 @@ ruleTester.run("indent", rule, {
             options: [2, {VariableDeclarator: 1}],
             errors: expectedErrors([
                 [2, 2, 0, "VariableDeclarator"]
-            ])
+            ]),
+            output:
+            "var geometry,\n" +
+            "  rotate;"
         },
         {
             code:
@@ -1250,7 +1393,10 @@ ruleTester.run("indent", rule, {
             options: [2, {VariableDeclarator: 2}],
             errors: expectedErrors([
                 [2, 4, 2, "VariableDeclarator"]
-            ])
+            ]),
+            output:
+            "var geometry,\n" +
+            "    rotate;"
         },
         {
             code:
@@ -1259,7 +1405,10 @@ ruleTester.run("indent", rule, {
             options: ["tab", {VariableDeclarator: 2}],
             errors: expectedErrors("tab", [
                 [2, 2, 1, "VariableDeclarator"]
-            ])
+            ]),
+            output:
+            "var geometry,\n" +
+            "\t\trotate;"
         },
         {
             code:
@@ -1271,7 +1420,10 @@ ruleTester.run("indent", rule, {
             },
             errors: expectedErrors([
                 [2, 4, 2, "VariableDeclarator"]
-            ])
+            ]),
+            output:
+            "let geometry,\n" +
+            "    rotate;"
         },
         {
             code:
@@ -1282,7 +1434,12 @@ ruleTester.run("indent", rule, {
             options: [2, {"VariableDeclarator": 2, "SwitchCase": 1}],
             errors: expectedErrors([
                 [4, 6, 4, "ExpressionStatement"]
-            ])
+            ]),
+            output:
+            "if(true)\n" +
+            "  if (true)\n" +
+            "    if (true)\n" +
+            "      console.log(val);"
         },
         {
             code:
@@ -1294,7 +1451,12 @@ ruleTester.run("indent", rule, {
             errors: expectedErrors([
                 [2, 2, 4, "Property"],
                 [3, 2, 4, "Property"]
-            ])
+            ]),
+            output:
+            "var a = {\n" +
+            "  a: 1,\n" +
+            "  b: 2\n" +
+            "}"
         },
         {
             code:
@@ -1306,7 +1468,12 @@ ruleTester.run("indent", rule, {
             errors: expectedErrors([
                 [2, 2, 4, "Identifier"],
                 [3, 2, 4, "Identifier"]
-            ])
+            ]),
+            output:
+            "var a = [\n" +
+            "  a,\n" +
+            "  b\n" +
+            "]"
         },
         {
             code:
@@ -1319,7 +1486,12 @@ ruleTester.run("indent", rule, {
             errors: expectedErrors([
                 [2, 2, 4, "Identifier"],
                 [3, 2, 4, "Identifier"]
-            ])
+            ]),
+            output:
+            "let a = [\n" +
+            "  a,\n" +
+            "  b\n" +
+            "]"
         },
         {
             code:
@@ -1331,7 +1503,12 @@ ruleTester.run("indent", rule, {
             errors: expectedErrors([
                 [2, 8, 6, "Property"],
                 [3, 4, 2, "ObjectExpression"]
-            ])
+            ]),
+            output:
+            "var a = new Test({\n" +
+            "        a: 1\n" +
+            "    }),\n" +
+            "    b = 4;\n"
         },
         {
             code:
@@ -1349,7 +1526,16 @@ ruleTester.run("indent", rule, {
                 [6, 4, 6, "Property"],
                 [7, 2, 4, "ObjectExpression"],
                 [8, 2, 4, "VariableDeclarator"]
-            ])
+            ]),
+            output:
+            "var a = new Test({\n" +
+            "      a: 1\n" +
+            "    }),\n" +
+            "    b = 4;\n" +
+            "const a = new Test({\n" +
+            "    a: 1\n" +
+            "  }),\n" +
+            "  b = 4;\n"
         },
         {
             code:
@@ -1366,7 +1552,15 @@ ruleTester.run("indent", rule, {
                 [5, 6, 7, "Property"],
                 [6, 6, 8, "Property"],
                 [7, 4, 5, "ObjectExpression"]
-            ])
+            ]),
+            output:
+            "var abc = 5,\n" +
+            "    c = 2,\n" +
+            "    xyz = \n" +
+            "    {\n" +
+            "      a: 1,\n" +
+            "      b: 2\n" +
+            "    };"
         },
         {
             code:
@@ -1381,7 +1575,13 @@ ruleTester.run("indent", rule, {
                 [3, 6, 7, "Property"],
                 [4, 6, 8, "Property"],
                 [5, 4, 5, "ObjectExpression"]
-            ])
+            ]),
+            output:
+            "var abc = \n" +
+            "    {\n" +
+            "      a: 1,\n" +
+            "      b: 2\n" +
+            "    };"
         },
         {
             code:
@@ -1391,7 +1591,11 @@ ruleTester.run("indent", rule, {
             options: [2],
             errors: expectedErrors([
                 [3, 1, 0, "VariableDeclaration"]
-            ])
+            ]),
+            output:
+            "var path     = require('path')\n" +
+            " , crypto    = require('crypto')\n" +
+            " ;\n"
         },
         {
             code:
@@ -1400,7 +1604,11 @@ ruleTester.run("indent", rule, {
                 ";",
             errors: expectedErrors([
                 [3, 3, 0, "VariableDeclaration"]
-            ])
+            ]),
+            output:
+            "var a = 1\n" +
+            "   ,b = 2\n" +
+            "   ;"
         }
     ]
 });
