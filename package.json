@@ -108,5 +108,9 @@
   "license": "MIT",
   "engines": {
     "node": ">=0.10"
+  },
+  "jspm": {
+    "registry": "npm",
+    "main": "lib/eslint"
   }
 }
